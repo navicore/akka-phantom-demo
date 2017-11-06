@@ -1,9 +1,10 @@
-package onextent.akka.phantom.demo.assessment
+package onextent.akka.phantom.demo.actors
 
 import akka.actor._
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
-import onextent.akka.phantom.demo.assessment.AssessmentService.Get
+import onextent.akka.phantom.demo.actors.AssessmentService.Get
+import onextent.akka.phantom.demo.models.assessment.Assessment
 
 object AssessmentService {
   def props(implicit timeout: Timeout) = Props(new AssessmentService)

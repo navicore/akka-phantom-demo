@@ -5,7 +5,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import com.microsoft.azure.reactiveeventhubs.ResumeOnError._
 import com.typesafe.scalalogging.LazyLogging
-import onextent.akka.phantom.demo.assessment.{AssessmentRoute, AssessmentService}
+import onextent.akka.phantom.demo.actors.AssessmentService
+import onextent.akka.phantom.demo.http.{AssessmentRoute, ErrorSupport}
 
 object Main extends App with LazyLogging with ErrorSupport {
 

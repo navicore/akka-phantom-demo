@@ -1,4 +1,4 @@
-package onextent.akka.phantom.demo.assessment
+package onextent.akka.phantom.demo.models.assessment
 
 import java.time.{ZoneOffset, ZonedDateTime}
 import java.util.UUID

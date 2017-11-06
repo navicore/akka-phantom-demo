@@ -1,4 +1,4 @@
-package onextent.akka.phantom.demo.assessment
+package onextent.akka.phantom.demo.models.assessment
 
 import onextent.akka.phantom.demo.models.JsonSupport
 import spray.json._

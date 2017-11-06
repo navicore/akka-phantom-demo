@@ -1,4 +1,4 @@
-package onextent.akka.phantom.demo.assessment
+package onextent.akka.phantom.demo.http
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
@@ -6,8 +6,8 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import com.typesafe.scalalogging.LazyLogging
-import onextent.akka.phantom.demo.ErrorSupport
-import onextent.akka.phantom.demo.assessment.AssessmentService.Get
+import onextent.akka.phantom.demo.actors.AssessmentService.Get
+import onextent.akka.phantom.demo.models.assessment.{Assessment, AssessmentJsonSupport}
 import spray.json._
 
 import scala.concurrent.Future

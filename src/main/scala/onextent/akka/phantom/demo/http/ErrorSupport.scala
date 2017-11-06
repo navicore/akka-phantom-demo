@@ -1,4 +1,4 @@
-package onextent.akka.phantom.demo
+package onextent.akka.phantom.demo.http
 
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
