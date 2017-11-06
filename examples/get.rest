@@ -2,7 +2,7 @@ http://localhost:8080
 -s
 Content-Type: application/json; charset=utf-8
 
-GET /api/assessment/two
+GET /api/assessment/one
 
 http://localhost:8080
 -s
@@ -10,5 +10,5 @@ Content-Type: application/json; charset=utf-8
 
 POST /api/assessment
 
-{"name": "two", "value": 0.5}
+{"name": "one", "value": 0.1}
 
