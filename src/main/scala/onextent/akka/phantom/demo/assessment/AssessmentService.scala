@@ -4,7 +4,6 @@ import akka.actor._
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
 import onextent.akka.phantom.demo.assessment.AssessmentService.Get
-import onextent.akka.phantom.demo.streams.db.Holder
 
 object AssessmentService {
   def props(implicit timeout: Timeout) = Props(new AssessmentService)
@@ -17,10 +16,16 @@ class AssessmentService(implicit timeout: Timeout)
     extends Actor
     with LazyLogging {
 
-  override def receive: PartialFunction[Any, Unit] = {
+  override def receive: PartialFunction[Any, Unit] = hasState(Map[String, Assessment]())
+
+  def hasState(state: Map[String, Assessment]): PartialFunction[Any, Unit] = {
     case Get(name) =>
-      def notFound(): Unit = sender() ! None
-      context.child(name).fold(notFound())(_ forward Holder.Get())
+      sender() ! state.get(name)
+    case Assessment(name, value, _, _) =>
+      val newAssessment = Assessment(name, value)
+      sender() ! Some(newAssessment)
+      context become hasState(state + (newAssessment.name -> newAssessment))
+    case _ => sender() ! "huh?"
   }
 
 }

@@ -19,10 +19,11 @@ object AssessmentRoute
     with ErrorSupport {
 
   def apply(service: ActorRef): Route =
-    path(urlpath / "assessment" / Segment) { name =>
-      logRequest(urlpath) {
-        handleErrors {
-          cors(corsSettings) {
+    logRequest(urlpath) {
+      handleErrors {
+        cors(corsSettings) {
+
+          path(urlpath / "assessment" / Segment) { name =>
             get {
               val f: Future[Any] = service ask Get(name)
               onSuccess(f) { (r: Any) =>
@@ -37,7 +38,27 @@ object AssessmentRoute
                 }
               }
             }
-          }
+          } ~
+            path(urlpath / "assessment") {
+              post {
+                decodeRequest {
+                  entity(as[Assessment]) { assessment =>
+                    val f: Future[Any] = service ask assessment
+                    onSuccess(f) { (r: Any) =>
+                      {
+                        r match {
+                          case Some(assessment: Assessment) =>
+                            complete(HttpEntity(ContentTypes.`application/json`,
+                                                assessment.toJson.prettyPrint))
+                          case _ =>
+                            complete(StatusCodes.NotFound)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
         }
       }
     }

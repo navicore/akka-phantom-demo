@@ -1,5 +1,6 @@
 package onextent.akka.phantom.demo.models
 
+import java.time.{ZoneOffset, ZonedDateTime}
 import java.util.{Date, UUID}
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -43,4 +44,13 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     }
   }
 
+  implicit object ZonedDateTime extends JsonFormat[ZonedDateTime] {
+    def write(dt: ZonedDateTime): JsValue = JsString(dt.toString)
+    def read(value: JsValue): ZonedDateTime = {
+      value match {
+        case JsString(dt) => java.time.ZonedDateTime.ofInstant(parse8601(dt).toInstant, ZoneOffset.UTC)
+        case _            => throw DeserializationException("Expected 8601")
+      }
+    }
+  }
 }
