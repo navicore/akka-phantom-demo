@@ -6,8 +6,7 @@ import com.outworkers.phantom.dsl.ResultSet
 import com.typesafe.scalalogging.LazyLogging
 import onextent.akka.phantom.demo.actors.AssessmentService.Get
 import onextent.akka.phantom.demo.models.assessment.Assessment
-import onextent.akka.phantom.demo.models.db.connector.Connector
-import onextent.akka.phantom.demo.models.db.database.CassandraDatabase
+import onextent.akka.phantom.demo.models.assessment.db.CassandraDatabase
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -21,7 +20,6 @@ object AssessmentService {
 class AssessmentService(implicit timeout: Timeout)
     extends Actor
     with CassandraDatabase
-    with Connector.connector.Connector
     with LazyLogging {
 
   implicit val executionContext: ExecutionContextExecutor = context.dispatcher

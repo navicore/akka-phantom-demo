@@ -1,4 +1,4 @@
-package onextent.akka.phantom.demo.models.db.connector
+package onextent.akka.phantom.demo.models.assessment.db
 
 import com.outworkers.phantom.connectors.{CassandraConnection, ContactPoints}
 import com.typesafe.config.ConfigFactory

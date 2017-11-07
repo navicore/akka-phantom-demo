@@ -1,8 +1,7 @@
-package onextent.akka.phantom.demo.models.db.database
+package onextent.akka.phantom.demo.models.assessment.db
 
 import com.outworkers.phantom.dsl._
-import onextent.akka.phantom.demo.models.db.connector.Connector._
-import onextent.akka.phantom.demo.models.db.model.{ConcreteAssessmentsByNameModel, ConcreteAssessmentsModel}
+import onextent.akka.phantom.demo.models.assessment.db.Connector._
 
 class AssessmentsDatabase(override val connector: KeySpaceDef)
     extends Database[AssessmentsDatabase](connector) {
