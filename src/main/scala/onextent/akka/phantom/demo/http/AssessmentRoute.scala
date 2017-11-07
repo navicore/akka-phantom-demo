@@ -40,38 +40,41 @@ object AssessmentRoute
                 }
               }
             } ~
-            delete {
-              val f: Future[Any] = service ask Delete(id)
-              onSuccess(f) { (r: Any) =>
-                {
-                  r match {
-                    case Delete(deletedId) =>
-                      complete(StatusCodes.OK, s"$deletedId deleted")
-                    case _ =>
-                      complete(StatusCodes.NotFound)
+              delete {
+                val f: Future[Any] = service ask Delete(id)
+                onSuccess(f) { (r: Any) =>
+                  {
+                    r match {
+                      case Delete(deletedId) =>
+                        complete(StatusCodes.OK,
+                                 s"assessment $deletedId deleted")
+                      case _ =>
+                        complete(StatusCodes.NotFound)
+                    }
                   }
                 }
               }
-            }
 
           } ~
             path(urlpath / "assessment") {
               get {
-                parameters('name.as[String], 'limit.as[Int] ? defaultLimit) { (name, limit) =>
-                  {
-                    val f: Future[Any] = service ask GetByName(name, limit)
-                    onSuccess(f) { (r: Any) =>
-                      {
-                        r match {
-                          case assessments: List[Assessment @unchecked] =>
-                            complete(HttpEntity(ContentTypes.`application/json`,
-                                                assessments.toJson.prettyPrint))
-                          case _ =>
-                            complete(StatusCodes.NotFound)
+                parameters('name.as[String], 'limit.as[Int] ? defaultLimit) {
+                  (name, limit) =>
+                    {
+                      val f: Future[Any] = service ask GetByName(name, limit)
+                      onSuccess(f) { (r: Any) =>
+                        {
+                          r match {
+                            case assessments: List[Assessment @unchecked] =>
+                              complete(
+                                HttpEntity(ContentTypes.`application/json`,
+                                           assessments.toJson.prettyPrint))
+                            case _ =>
+                              complete(StatusCodes.NotFound)
+                          }
                         }
                       }
                     }
-                  }
                 }
               } ~
                 post {

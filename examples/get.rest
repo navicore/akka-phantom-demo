@@ -1,5 +1,6 @@
-currentId = b0d6cc2b-010f-4967-a174-8ad1f9d8a39b
+currentId = f79d6a26-fdbb-4301-866d-1c8932d9a7b9
 
+#Accept: text/xml; charset=utf-8
 --
 
 http://localhost:3000

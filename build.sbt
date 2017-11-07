@@ -11,10 +11,10 @@ parallelExecution in test := false
 
 version := "1.0"
 
-ensimeScalaVersion in ThisBuild := "2.12.3"
-scalaVersion := "2.12.3"
-val akkaVersion = "2.5.4"
-val akkaHttpVersion = "10.0.9"
+ensimeScalaVersion in ThisBuild := "2.12.4"
+scalaVersion := "2.12.4"
+val akkaVersion = "2.5.6"
+val akkaHttpVersion = "10.0.10"
 val phantomVersion = "2.9.2"
 
 libraryDependencies ++=
