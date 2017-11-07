@@ -1,4 +1,4 @@
-currentId = f79d6a26-fdbb-4301-866d-1c8932d9a7b9
+currentId = ce11d299-5aa4-4346-951b-3ed0cd78d09c
 
 #Accept: text/xml; charset=utf-8
 --
@@ -20,7 +20,7 @@ GET /api/assessment?name=three
 http://localhost:3000
 Content-Type: application/json; charset=utf-8
 POST /api/assessment
-{"name": "six", "value": 88.11}
+{"name": "one", "value": 88.011}
 
 http://localhost:3000
 Content-Type: application/json; charset=utf-8
