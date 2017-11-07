@@ -4,11 +4,11 @@ Content-Type: application/json; charset=utf-8
 
 GET /api/assessment/one
 
-http://localhost:8080
+http://localhost:7777
 -s
 Content-Type: application/json; charset=utf-8
 
 POST /api/assessment
 
-{"name": "one", "value": 0.1}
+{"name": "two", "value": 2.4}
 
