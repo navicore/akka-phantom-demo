@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import com.typesafe.scalalogging.LazyLogging
-import onextent.akka.phantom.demo.actors.AssessmentService.Get
+import onextent.akka.phantom.demo.actors.AssessmentService.{Delete, GetById, GetByName}
 import onextent.akka.phantom.demo.models.assessment.{Assessment, AssessmentJsonSupport}
 import spray.json._
 
@@ -18,14 +18,16 @@ object AssessmentRoute
     with Directives
     with ErrorSupport {
 
+  val defaultLimit = 1
+
   def apply(service: ActorRef): Route =
     logRequest(urlpath) {
       handleErrors {
         cors(corsSettings) {
 
-          path(urlpath / "assessment" / Segment) { name =>
+          path(urlpath / "assessment" / JavaUUID) { id =>
             get {
-              val f: Future[Any] = service ask Get(name)
+              val f: Future[Any] = service ask GetById(id)
               onSuccess(f) { (r: Any) =>
                 {
                   r match {
@@ -37,19 +39,33 @@ object AssessmentRoute
                   }
                 }
               }
+            } ~
+            delete {
+              val f: Future[Any] = service ask Delete(id)
+              onSuccess(f) { (r: Any) =>
+                {
+                  r match {
+                    case Delete(deletedId) =>
+                      complete(StatusCodes.OK, s"$deletedId deleted")
+                    case _ =>
+                      complete(StatusCodes.NotFound)
+                  }
+                }
+              }
             }
+
           } ~
             path(urlpath / "assessment") {
-              post {
-                decodeRequest {
-                  entity(as[Assessment]) { assessment =>
-                    val f: Future[Any] = service ask assessment
+              get {
+                parameters('name.as[String], 'limit.as[Int] ? defaultLimit) { (name, limit) =>
+                  {
+                    val f: Future[Any] = service ask GetByName(name, limit)
                     onSuccess(f) { (r: Any) =>
                       {
                         r match {
-                          case Some(assessment: Assessment) =>
+                          case assessments: List[Assessment @unchecked] =>
                             complete(HttpEntity(ContentTypes.`application/json`,
-                                                assessment.toJson.prettyPrint))
+                                                assessments.toJson.prettyPrint))
                           case _ =>
                             complete(StatusCodes.NotFound)
                         }
@@ -57,9 +73,29 @@ object AssessmentRoute
                     }
                   }
                 }
-              }
+              } ~
+                post {
+                  decodeRequest {
+                    entity(as[Assessment]) { assessment =>
+                      val f: Future[Any] = service ask assessment
+                      onSuccess(f) { (r: Any) =>
+                        {
+                          r match {
+                            case Some(assessment: Assessment) =>
+                              complete(
+                                HttpEntity(ContentTypes.`application/json`,
+                                           assessment.toJson.prettyPrint))
+                            case _ =>
+                              complete(StatusCodes.NotFound)
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
             }
         }
       }
     }
+
 }

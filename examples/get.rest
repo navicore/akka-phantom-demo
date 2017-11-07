@@ -1,14 +1,28 @@
-http://localhost:8080
--s
+currentId = b0d6cc2b-010f-4967-a174-8ad1f9d8a39b
+
+--
+
+http://localhost:3000
 Content-Type: application/json; charset=utf-8
+GET /api/assessment?name=six&limit=3
 
-GET /api/assessment/one
-
-http://localhost:7777
--s
+http://localhost:3000
 Content-Type: application/json; charset=utf-8
+GET /api/assessment/:currentId
 
+http://localhost:3000
+Content-Type: application/json; charset=utf-8
+GET /api/assessment?name=one
+GET /api/assessment?name=two
+GET /api/assessment?name=three
+
+http://localhost:3000
+Content-Type: application/json; charset=utf-8
 POST /api/assessment
+{"name": "six", "value": 88.11}
 
-{"name": "two", "value": 2.4}
+http://localhost:3000
+Content-Type: application/json; charset=utf-8
+DELETE /api/assessment/:currentId
+
 

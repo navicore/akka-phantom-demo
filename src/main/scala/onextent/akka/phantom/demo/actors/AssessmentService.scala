@@ -1,10 +1,12 @@
 package onextent.akka.phantom.demo.actors
 
+import java.util.UUID
+
 import akka.actor._
 import akka.util.Timeout
 import com.outworkers.phantom.dsl.ResultSet
 import com.typesafe.scalalogging.LazyLogging
-import onextent.akka.phantom.demo.actors.AssessmentService.Get
+import onextent.akka.phantom.demo.actors.AssessmentService.{Delete, GetById, GetByName}
 import onextent.akka.phantom.demo.models.assessment.Assessment
 import onextent.akka.phantom.demo.models.assessment.db.CassandraDatabase
 
@@ -15,7 +17,9 @@ object AssessmentService {
   def props(implicit timeout: Timeout) = Props(new AssessmentService)
   def name = "assessmentService"
 
-  final case class Get(name: String)
+  final case class GetByName(name: String, limit: Int)
+  final case class GetById(id: UUID)
+  final case class Delete(id: UUID)
 }
 class AssessmentService(implicit timeout: Timeout)
     extends Actor
@@ -26,6 +30,13 @@ class AssessmentService(implicit timeout: Timeout)
 
   database.create(5.seconds)
 
+  def delete(assessment: Assessment): Future[ResultSet] = {
+    for {
+      _ <- database.assessmentsModel.deleteById(assessment.id.get)
+      byName <- database.assessmentsByNamesModel.deleteByNameAndDatetime(assessment.name, assessment.datetime.get)
+    } yield byName
+  }
+
   def store(assessment: Assessment): Future[ResultSet] = {
     for {
       _ <- database.assessmentsModel.store(assessment)
@@ -35,24 +46,35 @@ class AssessmentService(implicit timeout: Timeout)
 
   override def receive: PartialFunction[Any, Unit] = {
 
-    case Get(name) =>
+    case Delete(id) =>
+      val sdr = sender()
+
+      database.assessmentsModel
+        .getByAssessmentId(id).onComplete(r => {
+        if (r.get.isEmpty) sdr ! None
+        else delete(r.get.head).onComplete(_ => sdr ! Delete(id))
+      })
+
+    case GetById(id) =>
+      val sdr = sender()
+      database.assessmentsModel
+        .getByAssessmentId(id)
+        .onComplete(r =>
+          if (r.get.isEmpty)
+            sdr ! None
+          else
+            sdr ! Some(r.get.head))
+
+    case GetByName(name, limit) =>
       val sdr = sender()
       database.assessmentsByNamesModel
         .getByName(name)
-        .onComplete(r => {
-          if (r.get.isEmpty) {
-            sdr ! None
-          } else {
-            sdr ! Some(r.get.head)
-          }
-        })
+        .onComplete(r => sdr ! r.get.slice(0, limit))
 
     case Assessment(name, value, _, _) =>
       val sdr = sender()
       val newAssessment = Assessment(name, value)
-      store(newAssessment).onComplete(_ => {
-        sdr ! Some(newAssessment)
-      })
+      store(newAssessment).onComplete(_ => sdr ! Some(newAssessment))
 
     case _ => sender() ! "huh?"
   }
