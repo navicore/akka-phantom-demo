@@ -26,9 +26,6 @@ class AssessmentService(implicit timeout: Timeout)
 
   database.create(5.seconds)
 
-  override def receive: PartialFunction[Any, Unit] =
-    hasState(Map[String, Assessment]())
-
   def store(assessment: Assessment): Future[ResultSet] = {
     for {
       _ <- database.assessmentsModel.store(assessment)
@@ -36,21 +33,26 @@ class AssessmentService(implicit timeout: Timeout)
     } yield byName
   }
 
-  def hasState(state: Map[String, Assessment]): PartialFunction[Any, Unit] = {
+  override def receive: PartialFunction[Any, Unit] = {
 
     case Get(name) =>
-      sender() ! state.get(name)
+      val sdr = sender()
+      database.assessmentsByNamesModel
+        .getByName(name)
+        .onComplete(r => {
+          if (r.get.isEmpty) {
+            sdr ! None
+          } else {
+            sdr ! Some(r.get.head)
+          }
+        })
 
     case Assessment(name, value, _, _) =>
-      val newAssessment = Assessment(name, value)
-
       val sdr = sender()
-      //store(newAssessment).onComplete(_ => logger.debug(s"stored")) //todo: how should this be coded in an actor?  re become and reply to sender AFTER db future completes?
-      store(newAssessment).onComplete( _ => {
+      val newAssessment = Assessment(name, value)
+      store(newAssessment).onComplete(_ => {
         sdr ! Some(newAssessment)
-        context become hasState(state + (newAssessment.name -> newAssessment))
       })
-
 
     case _ => sender() ! "huh?"
   }
