@@ -14,4 +14,6 @@ object Connector {
   lazy val connector: CassandraConnection = ContactPoints(Seq(contactPoint1))
     .withClusterBuilder(_.withCredentials(username, password))
     .keySpace(keyspace)
+
+
 }

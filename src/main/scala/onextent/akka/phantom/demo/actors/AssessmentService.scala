@@ -4,13 +4,11 @@ import java.util.UUID
 
 import akka.actor._
 import akka.util.Timeout
-import com.outworkers.phantom.dsl.ResultSet
 import com.typesafe.scalalogging.LazyLogging
 import onextent.akka.phantom.demo.actors.AssessmentService.{Delete, GetById, GetByName}
 import onextent.akka.phantom.demo.models.assessment.Assessment
 import onextent.akka.phantom.demo.models.assessment.db.CassandraDatabase
 
-import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
 object AssessmentService {
@@ -27,13 +25,14 @@ class AssessmentService(implicit timeout: Timeout)
     with LazyLogging {
 
   implicit val executionContext: ExecutionContextExecutor = context.dispatcher
-
-  database.create(5.seconds)
+  import com.outworkers.phantom.dsl._
+  database.create()
 
   def delete(assessment: Assessment): Future[ResultSet] = {
     for {
       _ <- database.assessmentsModel.deleteById(assessment.id.get)
-      byName <- database.assessmentsByNamesModel.deleteByNameAndDatetime(assessment.name, assessment.datetime.get)
+      byName <- database.assessmentsByNamesModel
+        .deleteByNameAndDatetime(assessment.name, assessment.datetime.get)
     } yield byName
   }
 
@@ -50,20 +49,22 @@ class AssessmentService(implicit timeout: Timeout)
       val sdr = sender()
 
       database.assessmentsModel
-        .getByAssessmentId(id).onComplete(r => {
-        if (r.get.isEmpty) sdr ! None
-        else delete(r.get.head).onComplete(_ => sdr ! Delete(id))
-      })
+        .getByAssessmentId(id)
+        .onComplete(r => {
+          if (r.get.isEmpty) sdr ! None
+          else delete(r.get.head).onComplete(_ => sdr ! Delete(id))
+        })
 
     case GetById(id) =>
       val sdr = sender()
       database.assessmentsModel
         .getByAssessmentId(id)
-        .onComplete(r =>
-          if (r.get.isEmpty)
-            sdr ! None
-          else
-            sdr ! Some(r.get.head))
+        .onComplete(
+          r =>
+            if (r.get.isEmpty)
+              sdr ! None
+            else
+              sdr ! Some(r.get.head))
 
     case GetByName(name, limit) =>
       val sdr = sender()

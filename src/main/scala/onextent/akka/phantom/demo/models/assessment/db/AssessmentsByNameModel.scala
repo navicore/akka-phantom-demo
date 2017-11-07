@@ -8,19 +8,19 @@ import onextent.akka.phantom.demo.models.assessment.Assessment
 
 import scala.concurrent.Future
 
-class AssessmentsByNameModel extends CassandraTable[AssessmentsByNameModel, Assessment] {
+abstract class AssessmentsByNameModel extends Table[AssessmentsByNameModel, Assessment] {
 
   override def tableName: String = "assessments_by_name"
 
-  object name extends StringColumn(this) with PartitionKey
+  object name extends Col[String] with PartitionKey
 
-  object value extends DoubleColumn(this)
+  object value extends Col[Double]
 
-  object id extends StringColumn(this) {
+  object id extends Col[String] {
     override lazy val name = "assessment_id"
   }
 
-  object datetime extends DateColumn(this) with ClusteringOrder {
+  object datetime extends DateColumn with ClusteringOrder {
     override lazy val name = "assessment_datetime"
   }
 

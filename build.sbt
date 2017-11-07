@@ -15,11 +15,7 @@ ensimeScalaVersion in ThisBuild := "2.12.4"
 scalaVersion := "2.12.4"
 val akkaVersion = "2.5.6"
 val akkaHttpVersion = "10.0.10"
-//val phantomVersion = "2.9.2" // works
-//val phantomVersion = "2.15.3" // latest does not build
-
-val phantomVersion = "2.13.0" // most recent version that builds
-
+val phantomVersion = "2.15.3"
 
 libraryDependencies ++=
   Seq(
@@ -41,7 +37,6 @@ libraryDependencies ++=
     "com.outworkers"   %% "phantom-dsl"        % phantomVersion exclude("org.slf4j", "log4j-over-slf4j"),
 
     "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-
   )
 
 dependencyOverrides ++= Set(
