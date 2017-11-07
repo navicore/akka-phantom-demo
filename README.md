@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/navicore/akka-phantom-demo.svg?branch=master)](https://travis-ci.org/navicore/akka-phantom-demo)
+
 # akka-phantom-demo
 POC for using Phantom Cassandra APIs
 ----
