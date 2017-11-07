@@ -20,7 +20,9 @@ class AssessmentsModel extends CassandraTable[ConcreteAssessmentsModel, Assessme
 
   object value extends DoubleColumn(this)
 
-  object datetime extends DateColumn(this)
+  object datetime extends DateColumn(this) {
+    override lazy val name = "assessment_datetime"
+  }
 
   override def fromRow(r: Row): Assessment = Assessment(name(r), value(r), Some(UUID.fromString(id(r))), Some( ZonedDateTime.ofInstant(datetime(r).toInstant, ZoneOffset.UTC) ))
 }

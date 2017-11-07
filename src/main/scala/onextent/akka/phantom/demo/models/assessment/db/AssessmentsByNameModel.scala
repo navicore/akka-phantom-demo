@@ -16,10 +16,12 @@ class AssessmentsByNameModel extends CassandraTable[AssessmentsByNameModel, Asse
 
   object value extends DoubleColumn(this)
 
-  object id extends StringColumn(this)
+  object id extends StringColumn(this) {
+    override lazy val name = "assessment_id"
+  }
 
   object datetime extends DateColumn(this) with ClusteringOrder {
-    override lazy val name = "assessment_id"
+    override lazy val name = "assessment_datetime"
   }
 
   override def fromRow(r: Row): Assessment = Assessment(name(r), value(r), Some(UUID.fromString(id(r))), Some( ZonedDateTime.ofInstant(datetime(r).toInstant, ZoneOffset.UTC) ))
