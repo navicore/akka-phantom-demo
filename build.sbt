@@ -15,6 +15,7 @@ ensimeScalaVersion in ThisBuild := "2.12.3"
 scalaVersion := "2.12.3"
 val akkaVersion = "2.5.4"
 val akkaHttpVersion = "10.0.9"
+val phantomVersion = "2.9.2"
 
 libraryDependencies ++=
   Seq(
@@ -33,7 +34,7 @@ libraryDependencies ++=
     "org.json4s" %% "json4s-native" % "3.5.3",
     "com.github.nscala-time" %% "nscala-time" % "2.16.0",
 
-    "com.microsoft.azure" %% "azure-eventhubs-reactive" % "0.5.0",
+    "com.outworkers"   %% "phantom-dsl"        % phantomVersion exclude("org.slf4j", "log4j-over-slf4j"),
 
     "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
